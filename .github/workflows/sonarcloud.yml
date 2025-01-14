@@ -19,6 +19,11 @@ jobs:
       - name: Verify Java Version
         run: java -version
 
+      - name: Set JAVA_HOME to Java 17
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
