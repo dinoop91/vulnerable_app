@@ -22,9 +22,15 @@ jobs:
       - name: Install SonarScanner 5.x
         run: |
           curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
-          unzip sonar-scanner.zip
-          mv sonar-scanner-5.0.0.330-linux $HOME/sonar-scanner
-          echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
+          # Verify if the file exists and is valid
+          if [[ -f sonar-scanner.zip ]]; then
+            unzip sonar-scanner.zip
+            mv sonar-scanner-5.0.0.330-linux $HOME/sonar-scanner
+            echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
+          else
+            echo "Download failed: sonar-scanner.zip not found or invalid."
+            exit 1
+          fi
 
       - name: Set JAVA_HOME explicitly for SonarScanner
         run: |
