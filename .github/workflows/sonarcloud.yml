@@ -19,41 +19,10 @@ jobs:
       - name: Verify Java Version
         run: java -version
 
-      - name: Download SonarScanner CLI and check file content
-        run: |
-          # Download SonarScanner CLI
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
-
-          # Check if the file exists and inspect its contents
-          if [[ -s sonar-scanner.zip ]]; then
-            echo "File downloaded successfully. Checking file type."
-            file sonar-scanner.zip
-            curl -I https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
-            # If the file is valid, unzip it
-            unzip sonar-scanner.zip
-            mv sonar-scanner-5.0.0.330-linux $HOME/sonar-scanner
-            echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
-          else
-            echo "Error: The file was not downloaded correctly."
-            exit 1
-          fi
-
-      - name: Set JAVA_HOME explicitly for SonarScanner
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
-
-      - name: Verify SonarScanner Installation
-        run: sonar-scanner --version
-
-      - name: Run SonarCloud scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+          sonar-organization: ${{ secrets.SONAR_ORGANIZATION }}
         env:
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sonar-scanner \
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
