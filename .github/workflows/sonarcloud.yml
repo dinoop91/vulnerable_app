@@ -19,14 +19,17 @@ jobs:
       - name: Verify Java Version
         run: java -version
 
-      - name: Install SonarScanner 5.x
+      - name: Download SonarScanner CLI and check file content
         run: |
           # Download SonarScanner CLI
           curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
 
-          # Check if the file is downloaded successfully
+          # Check if the file exists and inspect its contents
           if [[ -s sonar-scanner.zip ]]; then
-            echo "File downloaded successfully, proceeding to unzip."
+            echo "File downloaded successfully. Checking file type."
+            file sonar-scanner.zip
+            curl -I https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
+            # If the file is valid, unzip it
             unzip sonar-scanner.zip
             mv sonar-scanner-5.0.0.330-linux $HOME/sonar-scanner
             echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
