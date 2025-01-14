@@ -24,21 +24,18 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
           echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Install SonarScanner
         run: |
           curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
           unzip sonar-scanner.zip
           mv sonar-scanner-4.8.0.2856-linux $HOME/sonar-scanner
           echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
+
+      - name: Force SonarScanner to use Java 17
+        run: |
+          # Modify SonarScanner launch script to force use of JAVA_HOME
+          sed -i 's/^#export JAVA_HOME=.*/export JAVA_HOME=$JAVA_HOME/' $HOME/sonar-scanner/bin/sonar-scanner
+          sed -i 's/^#export PATH=.*/export PATH=$JAVA_HOME\/bin:$PATH/' $HOME/sonar-scanner/bin/sonar-scanner
 
       - name: Verify SonarScanner Installation
         run: sonar-scanner --version
