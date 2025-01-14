@@ -19,11 +19,11 @@ jobs:
       - name: Verify Java Version
         run: java -version
 
-      - name: Install SonarScanner
+      - name: Install SonarScanner 5.x
         run: |
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.330-linux.zip
           unzip sonar-scanner.zip
-          mv sonar-scanner-4.8.0.2856-linux $HOME/sonar-scanner
+          mv sonar-scanner-5.0.0.330-linux $HOME/sonar-scanner
           echo "$HOME/sonar-scanner/bin" >> $GITHUB_PATH
 
       - name: Set JAVA_HOME explicitly for SonarScanner
@@ -31,14 +31,17 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
           echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Force SonarScanner to use Java 17
+      - name: Verify SonarScanner Installation
+        run: sonar-scanner --version
+
+      - name: Run SonarCloud scan
+        env:
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          # Ensure SonarScanner uses the system Java 17 instead of bundled Java 11
-          export JAVA_HOME=$JAVA_HOME
-          export PATH=$JAVA_HOME/bin:$PATH
-          $HOME/sonar-scanner/bin/sonar-scanner \
+          sonar-scanner \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
