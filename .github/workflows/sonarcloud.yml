@@ -22,7 +22,7 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
-          sonar-organization: ${{ secrets.SONAR_ORGANIZATION }}
+          sonar-project-key: random2
+          sonar-organization: dinoop91
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
