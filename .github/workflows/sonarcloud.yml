@@ -1,7 +1,7 @@
 name: SonarCloud SAST Analysis
 
 on:
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   sonarcloud:
@@ -21,6 +21,12 @@ jobs:
 
       - name: Run SonarCloud scan
         env:
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner
+          sonar-scanner \
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
